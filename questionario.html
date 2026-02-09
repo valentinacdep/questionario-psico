@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Questionário de Avaliação Comportamental</title>
+  <style>
+    :root {
+      --primary: #2b7cff;
+      --secondary: #6c63ff;
+      --bg: #f4f7fb;
+      --card: #ffffff;
+      --text: #333;
+    }
+    body {
+      font-family: 'Segoe UI', Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      margin: 0;
+      padding: 20px 30px;
+      line-height: 1.6;
+    }
+    h1 {
+      text-align: center;
+      color: var(--primary);
+      margin: 20px 0 40px;
+    }
+    .card {
+      background: var(--card);
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 20px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    }
+    .question {
+      font-weight: 500;
+      margin: 10px 0 15px;
+    }
+    .opcoes {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    .opcao input[type="radio"] { display: none; }
+    .opcao label {
+      padding: 10px 18px;
+      border-radius: 8px;
+      background: #e0e7ff;
+      cursor: pointer;
+      transition: all 0.25s;
+    }
+    .opcao input[type="radio"]:checked + label {
+      background: var(--secondary);
+      color: white;
+      font-weight: bold;
+    }
+    #idPaciente-container { margin-bottom: 30px; }
+    input[type="text"] {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 16px;
+      box-sizing: border-box;
+    }
+    .enviar-area {
+      text-align: center;
+      margin: 40px 0;
+    }
+    button {
+      padding: 16px 50px;
+      font-size: 18px;
+      background: var(--primary);
+      color: white;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background 0.3s, transform 0.15s;
+    }
+    button:hover { background: var(--secondary); transform: scale(1.05); }
+  </style>
+</head>
+<body>
+
+  <h1>Questionário de Avaliação Comportamental</h1>
+
+  <form id="formulario">
+    <div class="card" id="idPaciente-container">
+      <div class="question">Nome do Paciente (obrigatório)</div>
+      <input type="text" id="idPaciente" placeholder="Preencha com o nome completo do paciente">
+    </div>
+  </form>
+
+  <div class="enviar-area">
+    <button type="button" onclick="enviarFormulario()">Enviar respostas</button>
+  </div>
+
+  <script>
+    const opcoes = [
+      {texto: "Nenhum", valor: 0},
+      {texto: "Pouco",  valor: 1},
+      {texto: "Razoável", valor: 2},
+      {texto: "Muito",  valor: 3}
+    ];
+
+    const perguntas = [
+      "Constantemente se movendo (mesmo quando sentado)",
+      "Emite sons, ruídos",
+      "Pedidos precisam ser imediatamente atendidos",
+      "Irrequieto",
+      "Excitável, impulsivo",
+      "Desatento, facilmente distraído",
+      "Não termina o que começa",
+      "Extremamente sensível",
+      "Extremamente sério ou triste",
+      "Mal-humorado, rabugento",
+      "Chora com frequência",
+      "Perturba outras crianças",
+      "Provoca confusão",
+      "Humor muda com rapidez",
+      "Matreiro, faz de esperto",
+      "Destrutivo",
+      "Mente",
+      "Explosões de raiva ou comportamento explosivo",
+      "Isola-se de outras crianças",
+      "Parecer não ser aceito pelo grupo",
+      "Não tem espírito esportivo",
+      "Parecer não ter liderança",
+      "Não se relaciona bem com o sexo oposto",
+      "Não se relaciona bem com o mesmo sexo",
+      "Provoca outras crianças ou interfere nas atividades",
+      "Submissa",
+      "Desafiadora",
+      "Atrevida",
+      "Tímida",
+      "Medrosa",
+      "Exige muita atenção do professor",
+      "Teimosa",
+      "Dificuldade de concentração nos deveres escolares",
+      "Dificuldade de se fixar em uma brincadeira",
+      "Sempre mudando de atividade",
+      "Dificuldade de organizar tarefas",
+      "Grita em sala",
+      "Dificuldade de esperar sua vez",
+      "Sempre correndo ou pulando",
+      "Parece movido a motor",
+      "Responde antes da pergunta terminar",
+      "Dificuldade de brincar quieta",
+      "Fala excessivamente",
+      "Interrompe atividades dos outros",
+      "Parece não prestar atenção",
+      "Perde objetos com frequência",
+      "Participa de tarefas perigosas sem pensar",
+      "Trabalha de forma independente",
+      "Persiste em tarefas por bom tempo",
+      "Completa deveres com pouca assistência",
+      "Segue instruções simples corretamente",
+      "Funciona bem em sala de aula",
+      "Executa sequência de instruções",
+      "Comporta-se bem com colegas",
+      "Comunicação verbal clara",
+      "Comunicação não verbal correta",
+      "Compreende normas sociais",
+      "Sabe fazer amigos",
+      "Enfrenta situações confiante",
+      "Tenta envolver outros em confusões",
+      "Começa brigas sem motivo",
+      "Ridiculariza outros de modo malicioso"
+    ];
+
+    const form = document.getElementById("formulario");
+
+    perguntas.forEach((pergunta, index) => {
+      const card = document.createElement("div");
+      card.className = "card";
+      let html = `<div class="question"><b>${index + 1}.</b> ${pergunta}</div>`;
+      html += '<div class="opcoes">';
+      opcoes.forEach(op => {
+        html += `
+          <div class="opcao">
+            <input type="radio" id="q${index}_${op.valor}" name="q${index}" value="${op.valor}" required>
+            <label for="q${index}_${op.valor}">${op.texto}</label>
+          </div>
+        `;
+      });
+      html += '</div>';
+      card.innerHTML = html;
+      form.appendChild(card);
+    });
+
+    function enviarFormulario() {
+      let total = 0;
+      const respostas = [];
+
+      for (let i = 0; i < perguntas.length; i++) {
+        const selecionado = document.querySelector(`input[name="q${i}"]:checked`);
+        if (!selecionado) {
+          alert("Por favor, responda todas as perguntas.");
+          return;
+        }
+        const valor = parseInt(selecionado.value);
+        total += valor;
+        respostas.push(valor);
+      }
+
+      const maximo = perguntas.length * 3;
+      const porcentagem = ((total / maximo) * 100).toFixed(1);
+
+      // Subescalas com itens (índices começam em 0)
+      const subescalas = {
+        atencao_concentracao: [5,6,32,33,34,44].reduce((s, idx) => s + respostas[idx], 0),
+        hiperatividade_impulsividade: [0,3,4,37,38,39,40,42,43,46].reduce((s, idx) => s + respostas[idx], 0),
+        funcoes_executivas: [6,32,33,34,35,45,47,48,49,50,52].reduce((s, idx) => s + respostas[idx], 0),
+        habilidades_sociais: [18,19,22,23,24,53,56,57].reduce((s, idx) => s + respostas[idx], 0),
+        comunicacao: [54,55].reduce((s, idx) => s + respostas[idx], 0),
+        regulacao_emocional: [2,7,8,9,10,13,17,29].reduce((s, idx) => s + respostas[idx], 0),
+        oposicao_conduta: [11,12,14,15,16,59,60,61].reduce((s, idx) => s + respostas[idx], 0)
+      };
+
+      // Análise qualitativa (só para salvar na planilha, não mostrar no alerta)
+      let indicios = [];
+
+      if (subescalas.atencao_concentracao > 10) indicios.push("Mais indícios de TDAH desatento (dificuldades de atenção e concentração)");
+      if (subescalas.hiperatividade_impulsividade > 15) indicios.push("Mais indícios de TDAH hiperativo/impulsivo");
+      if (subescalas.funcoes_executivas > 18) indicios.push("Possíveis desafios em funções executivas (planejamento e organização)");
+      if (subescalas.habilidades_sociais > 12 || subescalas.comunicacao > 3) indicios.push("Indícios de dificuldades sociais e de interação (possível rastreio para TEA)");
+      if (subescalas.regulacao_emocional > 12) indicios.push("Mais indícios de dificuldade na regulação emocional");
+      if (subescalas.oposicao_conduta > 12) indicios.push("Possíveis comportamentos oposicionistas ou de conduta");
+
+      const indiciosTexto = indicios.length > 0 ? indicios.join("; ") : "Nenhum indício destacado";
+
+      const idPaciente = document.getElementById("idPaciente").value.trim() || "Anônimo";
+
+      const dados = {
+        idPaciente: idPaciente,
+        total_geral: total,
+        porcentagem_geral: porcentagem,
+        atencao_concentracao: subescalas.atencao_concentracao,
+        hiperatividade_impulsividade: subescalas.hiperatividade_impulsividade,
+        funcoes_executivas: subescalas.funcoes_executivas,
+        habilidades_sociais: subescalas.habilidades_sociais,
+        comunicacao: subescalas.comunicacao,
+        regulacao_emocional: subescalas.regulacao_emocional,
+        oposicao_conduta: subescalas.oposicao_conduta,
+        indicios_clinicos: indiciosTexto,  // Isso vai para a planilha, não para o paciente
+        respostas: respostas
+      };
+
+      fetch("https://script.google.com/macros/s/AKfycbzut7c2UTkBU3tVAifQJ99wtoLonAOLz-94p0sma00NeI-42oEi3YTv48Qhjt9xHFit/exec", {
+        method: "POST",
+        headers: { "Content-Type": "text/plain;charset=utf-8" },
+        body: JSON.stringify(dados),
+        redirect: "follow"
+      })
+      .then(r => {
+        if (!r.ok) throw new Error("Falha na conexão");
+        return r.json();
+      })
+      .then(() => {
+        alert("Respostas enviadas com sucesso! Obrigado pela participação.");
+      })
+      .catch(err => {
+        console.error(err);
+        alert("Erro ao enviar. Tente novamente ou avise a equipe.");
+      });
+    }
+  </script>
+
+</body>
+</html>
