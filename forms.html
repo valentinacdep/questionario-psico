@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8" />
+<title>Questionário Psicopedagógico</title>
+
+<style>
+:root {
+  --primary:#2b7cff;
+  --secondary:#6c63ff;
+  --background:#f4f7fb;
+  --card-bg:#ffffff;
+  --text:#333;
+}
+
+body{
+  font-family: 'Segoe UI', Arial, sans-serif;
+  background:var(--background);
+  padding:30px;
+  color:var(--text);
+  line-height:1.6;
+}
+
+h1{
+  text-align:center;
+  color:var(--primary);
+  margin-bottom:30px;
+}
+
+.card{
+  background:var(--card-bg);
+  padding:20px;
+  border-radius:12px;
+  margin-bottom:20px;
+  box-shadow:0 4px 12px rgba(0,0,0,0.08);
+}
+
+.question{
+  margin:10px 0;
+  font-weight:500;
+}
+
+.opcao{
+  display:inline-block;
+  margin:10px;
+}
+
+.opcao input[type="radio"]{
+  display:none; /* escondemos o radio padrão */
+}
+
+.opcao label{
+  display:inline-block;
+  padding:12px 20px;
+  border-radius:8px;
+  background:#e0e7ff;
+  color:#333;
+  font-size:15px;
+  cursor:pointer;
+  transition: all 0.3s ease;
+  border:2px solid transparent;
+}
+
+.opcao input[type="radio"]:checked + label{
+  background:var(--secondary);
+  color:white;
+  border-color:var(--primary);
+  font-weight:bold;
+}
+
+button{
+  padding:16px 35px;
+  border:none;
+  background:var(--primary);
+  color:white;
+  border-radius:10px;
+  font-size:18px;
+  cursor:pointer;
+  transition: background 0.3s ease, transform 0.2s ease;
+}
+button:hover{
+  background:var(--secondary);
+  transform: scale(1.05);
+}
+
+.resultado{
+  font-size:20px;
+  margin-top:25px;
+  font-weight:bold;
+  text-align:center;
+  color:var(--secondary);
+}
+</style>
+</head>
+
+<body>
+
+<h1>📊 Questionário de Avaliação Comportamental</h1>
+
+<form id="formulario"></form>
+
+<div style="text-align:center; margin-top:20px;">
+<button onclick="calcular()">Enviar respostas</button>
+</div>
+
+<div class="resultado" id="resultado"></div>
+
+<script>
+const opcoes = [
+  {texto:"Nenhum", valor:0},
+  {texto:"Pouco", valor:1},
+  {texto:"Razoável", valor:2},
+  {texto:"Muito", valor:3}
+];
+
+const perguntas = [
+"Constantemente se movendo (mesmo quando sentado)",
+"Emite sons, ruídos",
+"Pedidos precisam ser imediatamente atendidos",
+"Irrequieto",
+"Excitável, impulsivo",
+"Desatento, facilmente distraído",
+"Não termina o que começa",
+"Extremamente sensível",
+"Extremamente sério ou triste",
+"Mal-humorado, rabugento",
+"Chora com frequência",
+"Perturba outras crianças",
+"Provoca confusão",
+"Humor muda com rapidez",
+"Matreiro, faz de esperto",
+"Destrutivo",
+"Mente",
+"Explosões de raiva ou comportamento explosivo",
+"Isola-se de outras crianças",
+"Parece não ser aceito pelo grupo",
+"Não tem espírito esportivo",
+"Parece não ter liderança",
+"Não se relaciona bem com o sexo oposto",
+"Não se relaciona bem com o mesmo sexo",
+"Provoca outras crianças ou interfere nas atividades",
+"Submissa",
+"Desafiadora",
+"Atrevida",
+"Tímida",
+"Medrosa",
+"Exige muita atenção do professor",
+"Teimosa",
+"Dificuldade de concentração nos deveres escolares",
+"Dificuldade de se fixar em uma brincadeira",
+"Sempre mudando de atividade",
+"Dificuldade de organizar tarefas",
+"Grita em sala",
+"Dificuldade de esperar sua vez",
+"Sempre correndo ou pulando",
+"Parece movido a motor",
+"Responde antes da pergunta terminar",
+"Dificuldade de brincar quieta",
+"Fala excessivamente",
+"Interrompe atividades dos outros",
+"Parece não prestar atenção",
+"Perde objetos com frequência",
+"Participa de tarefas perigosas sem pensar",
+"Trabalha de forma independente",
+"Persiste em tarefas por bom tempo",
+"Completa deveres com pouca assistência",
+"Segue instruções simples corretamente",
+"Funciona bem em sala de aula",
+"Executa sequência de instruções",
+"Comporta-se bem com colegas",
+"Comunicação verbal clara",
+"Comunicação não verbal correta",
+"Compreende normas sociais",
+"Sabe fazer amigos",
+"Enfrenta situações confiante",
+"Tenta envolver outros em confusões",
+"Começa brigas sem motivo",
+"Ridiculariza outros de modo malicioso"
+];
+
+const form = document.getElementById("formulario");
+
+perguntas.forEach((p,i)=>{
+  let div = document.createElement("div");
+  div.className="card";
+
+  let html = `<div class="question"><b>${i+1}.</b> ${p}<br/>`;
+
+  opcoes.forEach(op=>{
+    html += `
+      <div class="opcao">
+        <input type="radio" id="q${i}_${op.valor}" name="q${i}" value="${op.valor}" required>
+        <label for="q${i}_${op.valor}">${op.texto}</label>
+      </div>
+    `;
+  });
+
+  html += `</div>`;
+  div.innerHTML = html;
+  form.appendChild(div);
+});
+
+function calcular(event) {
+  event.preventDefault();
+
+  let total = 0;
+  const max = perguntas.length * 3;
+  const respostas = [];
+
+  for (let i = 0; i < perguntas.length; i++) {
+    const v = document.querySelector(`input[name="q${i}"]:checked`);
+    if (!v) {
+      alert("Por favor, responda todas as perguntas antes de enviar.");
+      return;
+    }
+    const valor = parseInt(v.value);
+    total += valor;
+    respostas.push(valor);
+  }
+
+  const porcentagem = ((total / max) * 100).toFixed(1);
+
+  document.getElementById("resultado").innerHTML = 
+    `✅ Pontuação: ${total} / ${max} <br> 📈 Risco estimado: ${porcentagem}%`;
+
+  // Envio para o Google Apps Script
+  const payload = {
+    idPaciente: prompt("Digite um ID ou nome do paciente (opcional):") || "Anônimo",
+    total: total,
+    porcentagem: porcentagem,
+    respostas: respostas
+  };
+
+  fetch("https://script.google.com/macros/s/AKfycbzQDlkppRi6uxumn8AXhalqjqB-Ppb_Qgl1UaLNhfpwusqkO1AivSUfL6wF29pLP-it/exec", {
+    method: "POST",
+    headers: {
+      "Content-Type": "text/plain;charset=utf-8"
+    },
+    body: JSON.stringify(payload),
+    redirect: "follow"
+  })
+  .then(response => {
+    if (!response.ok) {
+      throw new Error(`Erro HTTP: ${response.status}`);
+    }
+    return response.json();
+  })
+  .then(data => {
+    alert("✅ Respostas enviadas com sucesso! " + (data.message || ""));
+  })
+  .catch(err => {
+    console.error("Erro ao enviar:", err);
+    alert("❌ Erro ao enviar as respostas.\nDetalhes: " + err.message + "\nVerifique o console (F12) para mais informações.");
+  });
+}
+
+// Impede o comportamento padrão do botão se não for chamado via onclick
+document.querySelector('button').addEventListener('click', calcular);
+</script>
+
+</body>
+</html>
